@@ -1,5 +1,6 @@
 """Tests for the variable marker file utilities."""
 
+import datetime
 import json
 
 import yaml
@@ -50,4 +51,18 @@ def test_yaml_input_to_json_output(tmp_path):
 	process_workflow_file_with_markers(source, output)
 
 	saved = json.loads(output.read_text())
+	assert saved['steps'][0]['value'] == '{user_email}'
+
+
+def test_yaml_date_value_to_json_output(tmp_path):
+	"""YAML-native values such as unquoted dates are written as JSON strings."""
+	steps = [dict(WORKFLOW['steps'][0], recorded_on=datetime.date(2026, 1, 1)), WORKFLOW['steps'][1]]
+	source = tmp_path / 'test.workflow.yaml'
+	source.write_text(yaml.dump(dict(WORKFLOW, steps=steps), sort_keys=False))
+	output = tmp_path / 'out.json'
+
+	process_workflow_file_with_markers(source, output)
+
+	saved = json.loads(output.read_text())
+	assert saved['steps'][0]['recorded_on'] == '2026-01-01'
 	assert saved['steps'][0]['value'] == '{user_email}'

@@ -74,7 +74,7 @@ def process_workflow_file_with_markers(
 		if output_path.suffix.lower() in ('.yaml', '.yml'):
 			yaml.dump(updated_workflow.model_dump(mode='json'), f, default_flow_style=False, sort_keys=False)
 		else:
-			json.dump(updated_workflow.model_dump(), f, indent=2)
+			json.dump(updated_workflow.model_dump(mode='json'), f, indent=2)
 
 	print(f'Processed workflow: {input_path}')
 	if extracted_inputs:
